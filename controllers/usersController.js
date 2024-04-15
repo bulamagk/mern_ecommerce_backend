@@ -50,7 +50,7 @@ const createUser = async (req, res) => {
 // Get Users Function -------------------------------------------------------------------
 const getUsers = async (req, res) => {
   try {
-    const users = await User.find({}, { password: 0 });
+    const users = await User.find({}, { password: 0, refreshToken: 0 });
     return res.status(200).json({ success: true, users });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -62,7 +62,14 @@ const getUser = async (req, res) => {
   const userId = req.params.id;
 
   try {
-    let user = await User.findById(userId);
+    const userExist = await User.findById(userId);
+    if (!userExist) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    let user = await User.findById(userId, { password: 0, refreshToken: 0 });
     return res.status(200).json({ success: true, user });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -73,6 +80,13 @@ const getUser = async (req, res) => {
 const updateUser = async (req, res) => {
   const userId = req.params.id;
   try {
+    const userExist = await User.findById(userId);
+    if (!userExist) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { ...req.body },
@@ -88,6 +102,13 @@ const updateUser = async (req, res) => {
 const deleteUser = async (req, res) => {
   const userId = req.params.id;
   try {
+    const userExist = await User.findById(userId);
+    if (!userExist) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
     await User.findByIdAndDelete(userId);
     return res
       .status(200)
