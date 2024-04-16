@@ -7,6 +7,8 @@ require("dotenv").config();
 // Routes imports
 const usersRoutes = require("./routes/usersRoute");
 const customersRoutes = require("./routes/customersRoute");
+const productsRoutes = require("./routes/productsRoute");
+const categoriesRoutes = require("./routes/categoriesRoute");
 
 // Initialize app
 const app = express();
@@ -25,6 +27,8 @@ app.get("/", (req, res) => {
 });
 app.use("/api/users", usersRoutes);
 app.use("/api/customers", customersRoutes);
+app.use("/api/products", productsRoutes);
+app.use("/api/categories", categoriesRoutes);
 
 // Error Middleware
 app.use(notFound);
