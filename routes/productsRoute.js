@@ -7,6 +7,8 @@ const {
   getProduct,
   updateProduct,
   deleteProduct,
+  addGalleryImage,
+  deleteGalleryImage,
 } = require("../controllers/productsController");
 
 /*
@@ -44,9 +46,25 @@ router.put("/:id", updateProduct);
 /*
  * ROUTE        /api/products/:id
  * DESC         Delete a product with specified id
- * METHOD       GET
+ * METHOD       DELETE
  * ACCESS       Private
  */
 router.delete("/:id", deleteProduct);
+
+/*
+ * ROUTE        /api/products/:id
+ * DESC         Delete a product gallery image with specified id
+ * METHOD       DELETE
+ * ACCESS       Private
+ */
+router.delete("/gallery/:id", deleteGalleryImage);
+
+/*
+ * ROUTE        /api/products/gallery/:id
+ * DESC         Add a product gallery image
+ * METHOD       PUT
+ * ACCESS       Private
+ */
+router.put("/gallery/:id", upload.single("gallery_image"), addGalleryImage);
 
 module.exports = router;

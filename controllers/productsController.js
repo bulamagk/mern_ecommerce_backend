@@ -64,7 +64,10 @@ const getProduct = async (req, res) => {
   const productId = req.params.id;
 
   try {
-    const product = await Product.findById(productId);
+    const product = await Product.findById(productId).populate({
+      path: "category",
+      select: "name -_id",
+    });
     if (!product) {
       return res
         .status(404)
@@ -127,10 +130,81 @@ const deleteProduct = async (req, res) => {
   }
 };
 
+// Add product gallery image ------------------------------------------------------------
+const addGalleryImage = async (req, res) => {
+  const productId = req.params.id;
+  try {
+    const productExist = await Product.findById(productId);
+    if (!productExist) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
+    }
+
+    // Upload gallery image
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      folder: "ecommerce/products",
+    });
+
+    const galleryImage = {
+      public_id: result.public_id,
+      secure_url: result.secure_url,
+    };
+
+    productExist.gallery.push(galleryImage);
+
+    await productExist.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Product image added successfully!",
+      product: productExist,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+// Delete product gallery image ---------------------------------------------------------
+const deleteGalleryImage = async (req, res) => {
+  const productId = req.params.id;
+  const imageId = req.query.imageId;
+
+  try {
+    const productExist = await Product.findById(productId);
+    if (!productExist) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
+    }
+
+    // Find gallery image
+    const galleryImage = productExist.gallery.find(
+      (image) => image._id == imageId
+    );
+
+    // Delete product image on cloudinary
+    await cloudinary.uploader.destroy(galleryImage.public_id);
+
+    productExist.gallery.pull({ _id: imageId });
+
+    await productExist.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Gallery image deleted successfully!",
+      product: productExist,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   createProduct,
   getProducts,
   getProduct,
   updateProduct,
   deleteProduct,
+  addGalleryImage,
+  deleteGalleryImage,
 };

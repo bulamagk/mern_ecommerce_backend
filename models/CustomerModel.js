@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-// const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 
 const customerSchema = new mongoose.Schema(
   {
@@ -48,11 +48,19 @@ const customerSchema = new mongoose.Schema(
 );
 
 // Hash password
-// customerSchema.pre("save", async function (next) {
-//   if (!this.isModified("password")) {
-//     next();
-//   }
-//   this.password = await bcrypt.hash(this.password, 10);
-// });
+customerSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) {
+    next();
+  }
+  this.password = await bcrypt.hash(this.password, 10);
+});
+
+customerSchema.pre("findOneAndUpdate", async function (next) {
+  if (!this._update.password) {
+    return next();
+  }
+  this._update.password = await bcrypt.hash(this._update.password, 10);
+  next();
+});
 
 module.exports = mongoose.model("Customer", customerSchema);
