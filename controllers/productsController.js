@@ -115,6 +115,15 @@ const deleteProduct = async (req, res) => {
         .json({ success: false, message: "Product not found" });
     }
 
+    // Delete product gallery images if exist
+    const galleryImages = productExist.gallery;
+    if (galleryImages.length > 0) {
+      // Delete gallery Images
+      galleryImages.forEach(async (image) => {
+        await cloudinary.uploader.destroy(image.public_id);
+      });
+    }
+
     // Delete product image on cloudinary
     const product_public_id = productExist?.image?.public_id;
     if (product_public_id) {
