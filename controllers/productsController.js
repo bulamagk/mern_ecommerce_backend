@@ -104,6 +104,32 @@ const updateProduct = async (req, res) => {
   }
 };
 
+// Update Product Image Function --------------------------------------------------------
+const updateProductImage = async (req, res) => {
+  const productId = req.params.id;
+  try {
+    const productExist = await Product.findById(productId);
+
+    if (!productExist) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
+    }
+
+    // Update product image
+    const productImagePublicId = productExist?.image?.public_id;
+    await cloudinary.uploader.upload(req.file.path, {
+      public_id: productImagePublicId,
+    });
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Product image updated successfully!" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // Delete Product Function -----------------------------------------------------------------
 const deleteProduct = async (req, res) => {
   const productId = req.params.id;
@@ -213,6 +239,7 @@ module.exports = {
   getProducts,
   getProduct,
   updateProduct,
+  updateProductImage,
   deleteProduct,
   addGalleryImage,
   deleteGalleryImage,
