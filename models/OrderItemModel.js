@@ -10,7 +10,11 @@ const orderItemSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    price: {
+    pricePerUnit: {
+      type: Number,
+      required: true,
+    },
+    totalPrice: {
       type: Number,
       required: true,
     },
