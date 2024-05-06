@@ -4,6 +4,7 @@ const {
   getOrder,
   updateOrder,
   deleteOrder,
+  verifyOrder,
 } = require("../controllers/ordersController");
 
 const router = require("express").Router();
@@ -15,6 +16,14 @@ const router = require("express").Router();
  * ACCESS       Private
  */
 router.post("/", createOrder);
+
+/*
+ * ROUTE        /api/orders/verify
+ * DESC         Verify order
+ * METHOD       POST
+ * ACCESS       Private
+ */
+router.post("/verify", verifyOrder);
 
 /*
  * ROUTE        /api/orders

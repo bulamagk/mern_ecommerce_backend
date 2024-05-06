@@ -1,21 +1,22 @@
 const Customer = require("../models/CustomerModel");
 const Product = require("../models/ProductModel");
 const Order = require("../models/OrderModel");
+const OrderItem = require("../models/OrderItemModel");
 
 const axios = require("axios");
 
 // Create Order Function -----------------------------------------------------------------
 const createOrder = async (req, res) => {
-  const { userId, orderItems } = req.body;
+  const { customerId, orderItems } = req.body;
 
   if (!orderItems?.length) {
     return res.status(400).json({ success: false, message: "No order item!" });
   }
 
   try {
-    // Find user
-    const user = await Customer.findById(userId);
-    if (!user) {
+    // Find customer
+    const customer = await Customer.findById(customerId);
+    if (!customer) {
       return res.status(400).json({
         success: false,
         message: "Customer not found, please log in to place an order",
@@ -32,6 +33,7 @@ const createOrder = async (req, res) => {
           name: 1,
           countInStock: 1,
           price: 1,
+          image: 1,
         });
 
         if (product.countInStock < orderItem.count) {
@@ -42,6 +44,7 @@ const createOrder = async (req, res) => {
             countInStock: product.countInStock,
             count: orderItem.count,
             pricePerUnit: product.price,
+            image: product?.image?.secure_url,
             message: `There are only ${product.countInStock} ${product.name} in stock but you want to order ${orderItem.count}`,
           });
         } else {
@@ -53,6 +56,7 @@ const createOrder = async (req, res) => {
             count: orderItem.count,
             pricePerUnit: product.price,
             totalPrice: product.price * orderItem.count,
+            image: product?.image?.secure_url,
           });
         }
       })
@@ -74,13 +78,12 @@ const createOrder = async (req, res) => {
     const paystackResponse = await axios.post(
       "https://api.paystack.co/transaction/initialize",
       {
-        email: user.email,
+        email: customer.email,
         amount: orderAmount * 100,
         metadata: {
-          userId,
+          customerId,
           orderItemsDetails,
         },
-        // callback_url:
       },
       {
         headers: {
@@ -100,10 +103,81 @@ const createOrder = async (req, res) => {
   }
 };
 
-// Get Orders Function -------------------------------------------------------------------
+// Verify Order Payment Function --------------------------------------------------------
+const verifyOrder = async (req, res) => {
+  const { reference } = req.body;
+  if (!reference) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Reference is required" });
+  }
+
+  try {
+    const response = await axios.get(
+      `https://api.paystack.co/transaction/verify/${reference}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.PAYSTACK_SECRET}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    // Check verification status and proceed with order if status is success
+    if (response.data.status) {
+      const orderData = response.data.data.metadata;
+
+      // Save orderItems
+      const orderItems = [...orderData.orderItemsDetails];
+      const orderItemsIdsArray = [];
+
+      await Promise.all(
+        orderItems.map(async (item) => {
+          const orderItem = await OrderItem.create({
+            product: item._id,
+            count: item.count,
+            pricePerUnit: item.pricePerUnit,
+            totalPrice: item.totalPrice,
+          });
+
+          orderItemsIdsArray.push(orderItem._id);
+        })
+      );
+
+      // Order information to be saved
+      let orderInfo = {
+        customer: orderData.customerId,
+        orderItems: orderItemsIdsArray, // To be updated
+        totalCost: response.data.data.amount / 100, //
+      };
+
+      // Create order
+      const order = await Order.create({ ...orderInfo });
+
+      return res.status(201).json({
+        success: true,
+        message: "Order created successfully",
+        order,
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Error during payment verification",
+      error: error?.response?.data,
+    });
+  }
+};
+
+// Get Orders Function ------------------------------------------------------------------
 const getOrders = async (req, res) => {
   try {
-    const orders = await Order.find({});
+    const orders = await Order.find({})
+      .populate({
+        path: "customer",
+        select: "-password",
+      })
+      .populate({ path: "orderItems", populate: { path: "product" } });
     return res.status(200).json({ success: true, orders });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -174,6 +248,7 @@ const deleteOrder = async (req, res) => {
 
 module.exports = {
   createOrder,
+  verifyOrder,
   getOrders,
   getOrder,
   updateOrder,
