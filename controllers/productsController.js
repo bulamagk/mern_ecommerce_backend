@@ -48,11 +48,20 @@ const createProduct = async (req, res) => {
 
 // Get Products Function ----------------------------------------------------------------
 const getProducts = async (req, res) => {
+  const { categoryId } = req.query;
+  let filter = {};
+
+  if (categoryId) {
+    filter = { category: categoryId };
+  }
+
   try {
-    const products = await Product.find({}).populate({
-      path: "category",
-      select: "name -_id",
-    });
+    const products = await Product.find(filter)
+      .populate({
+        path: "category",
+        select: "name -_id",
+      })
+      .sort({ createdAt: -1 });
     return res.status(200).json({ success: true, products });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
