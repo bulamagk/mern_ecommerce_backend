@@ -48,11 +48,15 @@ const createProduct = async (req, res) => {
 
 // Get Products Function ----------------------------------------------------------------
 const getProducts = async (req, res) => {
-  const { categoryId } = req.query;
+  const { categoryId, isFeatured } = req.query;
   let filter = {};
 
   if (categoryId) {
     filter = { category: categoryId };
+  }
+
+  if (isFeatured) {
+    filter = { isFeatured: String(isFeatured) == "true" ? true : false };
   }
 
   try {
