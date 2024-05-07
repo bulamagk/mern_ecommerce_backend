@@ -171,8 +171,19 @@ const verifyOrder = async (req, res) => {
 
 // Get Orders Function ------------------------------------------------------------------
 const getOrders = async (req, res) => {
+  const { status, customerId } = req.query;
+  let filter = {};
+
+  if (status) {
+    filter = { status };
+  }
+
+  if (customerId) {
+    filter = { customer: customerId };
+  }
+
   try {
-    const orders = await Order.find({})
+    const orders = await Order.find(filter)
       .populate({
         path: "customer",
         select: "-password",
