@@ -189,7 +189,12 @@ const getOrder = async (req, res) => {
   const orderId = req.params.id;
 
   try {
-    const order = await Order.findById(orderId);
+    const order = await Order.findById(orderId)
+      .populate({
+        path: "customer",
+        select: "-password",
+      })
+      .populate({ path: "orderItems", populate: { path: "product" } });
     if (!order) {
       return res
         .status(404)
@@ -236,6 +241,21 @@ const deleteOrder = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Order not found" });
     }
+
+    if (orderExist.status !== "Completed") {
+      return res.status(400).json({
+        success: false,
+        message: "You cannot delete an incomplete order!",
+      });
+    }
+
+    // Delete order items first
+    const orderItems = orderExist.orderItems;
+    await Promise.all(
+      orderItems.map(async (item) => {
+        await OrderItem.findByIdAndDelete(item);
+      })
+    );
 
     await Order.findByIdAndDelete(orderId);
     return res
