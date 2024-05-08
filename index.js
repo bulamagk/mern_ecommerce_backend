@@ -4,6 +4,7 @@ const express = require("express");
 const connectDB = require("./config/database");
 require("dotenv").config();
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 
 // Routes imports
 const usersRoutes = require("./routes/usersRoute");
@@ -20,6 +21,7 @@ const PORT = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // Custom Middleware
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");

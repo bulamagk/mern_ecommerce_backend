@@ -1,5 +1,8 @@
 const Customer = require("../models/CustomerModel");
-const { generateAccessToken } = require("../utils/generateTokens");
+const {
+  generateAccessToken,
+  generateRefreshToken,
+} = require("../utils/generateTokens");
 
 // Create Customer Function -----------------------------------------------------------------
 const createCustomer = async (req, res) => {
@@ -132,6 +135,20 @@ const login = async (req, res) => {
         .json({ success: false, message: "Incorrect email or password" });
     }
     if (customerExist && (await customerExist.comparePasswords(password))) {
+      // Generate refresh token
+      const refreshToken = await generateRefreshToken(customerExist._id, null);
+
+      console.log(refreshToken);
+
+      // Set httpOnly Cookie
+      res.cookie("jwt", refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV == "production" ? true : false,
+        maxAge: 24 * 60 * 60 * 1000,
+        sameSite: "strict",
+      });
+
+      // Generate access token
       const accessToken = await generateAccessToken(customerExist._id, null);
       const customer = {
         id: customerExist._id,
