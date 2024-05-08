@@ -138,7 +138,9 @@ const login = async (req, res) => {
       // Generate refresh token
       const refreshToken = await generateRefreshToken(customerExist._id, null);
 
-      console.log(refreshToken);
+      // Save refresh token in database
+      customerExist.refreshToken = refreshToken;
+      await customerExist.save();
 
       // Set httpOnly Cookie
       res.cookie("jwt", refreshToken, {
@@ -169,6 +171,40 @@ const login = async (req, res) => {
   }
 };
 
+// Logout Customer Function --------------------------------------------------------------
+const logout = async (req, res) => {
+  const { customerId } = req.params;
+
+  if (!customerId) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Customer ID is required" });
+  }
+
+  try {
+    // Find and clear customer refresh token
+    const customer = await Customer.findById(customerId);
+
+    if (!customer) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Customer not found" });
+    }
+    customer.refreshToken = "";
+    await customer.save();
+
+    // Clear cookie
+    res.clearCookie("jwt", { httpOnly: true, maxAge: new Date(0) });
+
+    return res.status(200).json({
+      success: true,
+      message: "You are logged out successfully!",
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   createCustomer,
   getCustomers,
@@ -176,4 +212,5 @@ module.exports = {
   updateCustomer,
   deleteCustomer,
   login,
+  logout,
 };

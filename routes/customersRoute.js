@@ -5,6 +5,7 @@ const {
   updateCustomer,
   deleteCustomer,
   login,
+  logout,
 } = require("../controllers/customersController");
 const { verifyAuth } = require("../middleware/verifyJWTs");
 
@@ -57,5 +58,13 @@ router.delete("/:id", verifyAuth, deleteCustomer);
  * ACCESS       Public
  */
 router.post("/login", login);
+
+/*
+ * ROUTE        /api/customers/logout
+ * DESC         Logout a customer
+ * METHOD       POST
+ * ACCESS       Public
+ */
+router.post("/logout/:customerId", verifyAuth, logout);
 
 module.exports = router;
