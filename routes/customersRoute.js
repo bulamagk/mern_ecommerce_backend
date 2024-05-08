@@ -4,7 +4,9 @@ const {
   getCustomer,
   updateCustomer,
   deleteCustomer,
+  login,
 } = require("../controllers/customersController");
+const { verifyAuth } = require("../middleware/verifyJWTs");
 
 const router = require("express").Router();
 
@@ -22,7 +24,7 @@ router.post("/", createCustomer);
  * METHOD       GET
  * ACCESS       Private
  */
-router.get("/", getCustomers);
+router.get("/", verifyAuth, getCustomers);
 
 /*
  * ROUTE        /api/customers/:id
@@ -30,7 +32,7 @@ router.get("/", getCustomers);
  * METHOD       GET
  * ACCESS       Private
  */
-router.get("/:id", getCustomer);
+router.get("/:id", verifyAuth, getCustomer);
 
 /*
  * ROUTE        /api/customers/:id
@@ -38,7 +40,7 @@ router.get("/:id", getCustomer);
  * METHOD       GET
  * ACCESS       Private
  */
-router.put("/:id", updateCustomer);
+router.put("/:id", verifyAuth, updateCustomer);
 
 /*
  * ROUTE        /api/customers/:id
@@ -46,6 +48,14 @@ router.put("/:id", updateCustomer);
  * METHOD       GET
  * ACCESS       Private
  */
-router.delete("/:id", deleteCustomer);
+router.delete("/:id", verifyAuth, deleteCustomer);
+
+/*
+ * ROUTE        /api/customers/login
+ * DESC         Authenticate a customer
+ * METHOD       POST
+ * ACCESS       Public
+ */
+router.post("/login", login);
 
 module.exports = router;

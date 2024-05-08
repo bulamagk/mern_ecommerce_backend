@@ -4,7 +4,8 @@ const cloudinary = require("../utils/cloudinary");
 
 // Create Product Function --------------------------------------------------------------
 const createProduct = async (req, res) => {
-  const { name, description, price, category, countInStock } = req.body;
+  const { name, description, price, category, countInStock, isFeatured } =
+    req.body;
 
   if (!(name && description && price && category && countInStock)) {
     return res
@@ -32,6 +33,7 @@ const createProduct = async (req, res) => {
       price,
       category,
       countInStock,
+      isFeatured,
       image: {
         public_id: result.public_id,
         secure_url: result.secure_url,

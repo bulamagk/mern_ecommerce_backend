@@ -63,4 +63,9 @@ customerSchema.pre("findOneAndUpdate", async function (next) {
   next();
 });
 
+// Compare password
+customerSchema.methods.comparePasswords = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
+
 module.exports = mongoose.model("Customer", customerSchema);

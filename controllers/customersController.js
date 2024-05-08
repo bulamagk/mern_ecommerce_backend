@@ -1,4 +1,5 @@
 const Customer = require("../models/CustomerModel");
+const { generateAccessToken } = require("../utils/generateTokens");
 
 // Create Customer Function -----------------------------------------------------------------
 const createCustomer = async (req, res) => {
@@ -113,10 +114,49 @@ const deleteCustomer = async (req, res) => {
   }
 };
 
+// Login Customer Function --------------------------------------------------------------
+const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!(email && password)) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Email and password are required!" });
+  }
+
+  try {
+    const customerExist = await Customer.findOne({ email });
+    if (!customerExist) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Incorrect email or password" });
+    }
+    if (customerExist && (await customerExist.comparePasswords(password))) {
+      const accessToken = await generateAccessToken(customerExist._id, null);
+      const customer = {
+        id: customerExist._id,
+        email: customerExist.email,
+        surname: customerExist.surname,
+        othername: customerExist.othername,
+        address: customerExist.address,
+        phone: customerExist.phone,
+      };
+      return res.status(200).json({ customer, accessToken });
+    } else {
+      return res
+        .status(400)
+        .json({ success: false, message: "Wrong email or/and password!" });
+    }
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   createCustomer,
   getCustomers,
   getCustomer,
   updateCustomer,
   deleteCustomer,
+  login,
 };
