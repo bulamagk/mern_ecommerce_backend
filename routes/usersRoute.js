@@ -4,7 +4,10 @@ const {
   getUser,
   updateUser,
   deleteUser,
+  login,
+  logout,
 } = require("../controllers/usersController");
+const { verifyAuth } = require("../middleware/verifyJWTs");
 
 const router = require("express").Router();
 
@@ -14,7 +17,7 @@ const router = require("express").Router();
  * METHOD       POST
  * ACCESS       Private
  */
-router.post("/", createUser);
+router.post("/", verifyAuth, createUser);
 
 /*
  * ROUTE        /api/users
@@ -22,7 +25,7 @@ router.post("/", createUser);
  * METHOD       GET
  * ACCESS       Private
  */
-router.get("/", getUsers);
+router.get("/", verifyAuth, getUsers);
 
 /*
  * ROUTE        /api/users/:id
@@ -30,7 +33,7 @@ router.get("/", getUsers);
  * METHOD       GET
  * ACCESS       Private
  */
-router.get("/:id", getUser);
+router.get("/:id", verifyAuth, getUser);
 
 /*
  * ROUTE        /api/users/:id
@@ -38,7 +41,7 @@ router.get("/:id", getUser);
  * METHOD       GET
  * ACCESS       Private
  */
-router.put("/:id", updateUser);
+router.put("/:id", verifyAuth, updateUser);
 
 /*
  * ROUTE        /api/users/:id
@@ -46,6 +49,22 @@ router.put("/:id", updateUser);
  * METHOD       GET
  * ACCESS       Private
  */
-router.delete("/:id", deleteUser);
+router.delete("/:id", verifyAuth, deleteUser);
+
+/*
+ * ROUTE        /api/users/login
+ * DESC         Login a user
+ * METHOD       POST
+ * ACCESS       Public
+ */
+router.post("/login", login);
+
+/*
+ * ROUTE        /api/users/logout
+ * DESC         Logout a user
+ * METHOD       POST
+ * ACCESS       Private
+ */
+router.post("/logout/:userId", logout);
 
 module.exports = router;

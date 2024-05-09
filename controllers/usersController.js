@@ -1,4 +1,8 @@
 const User = require("../models/UserModel");
+const {
+  generateAccessToken,
+  generateRefreshToken,
+} = require("../utils/generateTokens");
 
 // Create User Function -----------------------------------------------------------------
 const createUser = async (req, res) => {
@@ -118,10 +122,101 @@ const deleteUser = async (req, res) => {
   }
 };
 
+// Login User Function --------------------------------------------------------------
+const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!(email && password)) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Email and password are required!" });
+  }
+
+  try {
+    const userExist = await User.findOne({ email });
+    if (!userExist) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Incorrect email or password" });
+    }
+    if (userExist && (await userExist.comparePasswords(password))) {
+      // Generate refresh token
+
+      const refreshToken = await generateRefreshToken(userExist._id, null);
+
+      // Save refresh token in database
+      userExist.refreshToken = refreshToken;
+      await userExist.save();
+
+      // Set httpOnly Cookie
+      res.cookie("jwt", refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV == "production" ? true : false,
+        maxAge: 24 * 60 * 60 * 1000,
+        sameSite: "strict",
+      });
+
+      // Generate access token
+      const accessToken = await generateAccessToken(userExist._id, null);
+      const user = {
+        id: userExist._id,
+        email: userExist.email,
+        surname: userExist.surname,
+        othername: userExist.othername,
+        address: userExist.address,
+        phone: userExist.phone,
+      };
+      return res.status(200).json({ user, accessToken });
+    } else {
+      return res
+        .status(400)
+        .json({ success: false, message: "Wrong email or/and password!" });
+    }
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Logout user Function --------------------------------------------------------------
+const logout = async (req, res) => {
+  const { userId } = req.params;
+
+  if (!userId) {
+    return res
+      .status(400)
+      .json({ success: false, message: "user ID is required" });
+  }
+
+  try {
+    // Find and clear user refresh token
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "user not found" });
+    }
+    user.refreshToken = "";
+    await user.save();
+
+    // Clear cookie
+    res.clearCookie("jwt", { httpOnly: true, maxAge: new Date(0) });
+
+    return res.status(200).json({
+      success: true,
+      message: "You are logged out successfully!",
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   createUser,
   getUsers,
   getUser,
   updateUser,
   deleteUser,
+  login,
+  logout,
 };

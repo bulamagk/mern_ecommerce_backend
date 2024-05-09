@@ -6,6 +6,7 @@ const {
   deleteOrder,
   verifyOrder,
 } = require("../controllers/ordersController");
+const { verifyAuth } = require("../middleware/verifyJWTs");
 
 const router = require("express").Router();
 
@@ -15,7 +16,7 @@ const router = require("express").Router();
  * METHOD       POST
  * ACCESS       Private
  */
-router.post("/", createOrder);
+router.post("/", verifyAuth, createOrder);
 
 /*
  * ROUTE        /api/orders/verify
@@ -23,7 +24,7 @@ router.post("/", createOrder);
  * METHOD       POST
  * ACCESS       Private
  */
-router.post("/verify", verifyOrder);
+router.post("/verify", verifyAuth, verifyOrder);
 
 /*
  * ROUTE        /api/orders
@@ -31,7 +32,7 @@ router.post("/verify", verifyOrder);
  * METHOD       GET
  * ACCESS       Private
  */
-router.get("/", getOrders);
+router.get("/", verifyAuth, getOrders);
 
 /*
  * ROUTE        /api/orders/:id
@@ -39,7 +40,7 @@ router.get("/", getOrders);
  * METHOD       GET
  * ACCESS       Private
  */
-router.get("/:id", getOrder);
+router.get("/:id", verifyAuth, getOrder);
 
 /*
  * ROUTE        /api/orders/:id
@@ -47,7 +48,7 @@ router.get("/:id", getOrder);
  * METHOD       GET
  * ACCESS       Public
  */
-router.put("/:id", updateOrder);
+router.put("/:id", verifyAuth, updateOrder);
 
 /*
  * ROUTE        /api/orders/:id
@@ -55,6 +56,6 @@ router.put("/:id", updateOrder);
  * METHOD       GET
  * ACCESS       Private
  */
-router.delete("/:id", deleteOrder);
+router.delete("/:id", verifyAuth, deleteOrder);
 
 module.exports = router;

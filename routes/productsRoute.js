@@ -11,6 +11,7 @@ const {
   deleteGalleryImage,
   updateProductImage,
 } = require("../controllers/productsController");
+const { verifyAuth } = require("../middleware/verifyJWTs");
 
 /*
  * ROUTE        /api/products
@@ -18,7 +19,7 @@ const {
  * METHOD       POST
  * ACCESS       Private
  */
-router.post("/", upload.single("product_image"), createProduct);
+router.post("/", upload.single("product_image"), verifyAuth, createProduct);
 
 /*
  * ROUTE        /api/products
@@ -42,7 +43,7 @@ router.get("/:id", getProduct);
  * METHOD       GET
  * ACCESS       Public
  */
-router.put("/:id", updateProduct);
+router.put("/:id", verifyAuth, updateProduct);
 
 /*
  * ROUTE        /api/products/image/:id
@@ -50,7 +51,12 @@ router.put("/:id", updateProduct);
  * METHOD       PUT
  * ACCESS       Private
  */
-router.put("/image/:id", upload.single("product_image"), updateProductImage);
+router.put(
+  "/image/:id",
+  verifyAuth,
+  upload.single("product_image"),
+  updateProductImage
+);
 
 /*
  * ROUTE        /api/products/:id
@@ -58,7 +64,7 @@ router.put("/image/:id", upload.single("product_image"), updateProductImage);
  * METHOD       DELETE
  * ACCESS       Private
  */
-router.delete("/:id", deleteProduct);
+router.delete("/:id", verifyAuth, deleteProduct);
 
 /*
  * ROUTE        /api/products/:id
@@ -66,7 +72,7 @@ router.delete("/:id", deleteProduct);
  * METHOD       DELETE
  * ACCESS       Private
  */
-router.delete("/gallery/:id", deleteGalleryImage);
+router.delete("/gallery/:id", verifyAuth, deleteGalleryImage);
 
 /*
  * ROUTE        /api/products/gallery/:id
@@ -74,6 +80,11 @@ router.delete("/gallery/:id", deleteGalleryImage);
  * METHOD       PUT
  * ACCESS       Private
  */
-router.put("/gallery/:id", upload.single("gallery_image"), addGalleryImage);
+router.put(
+  "/gallery/:id",
+  verifyAuth,
+  upload.single("gallery_image"),
+  addGalleryImage
+);
 
 module.exports = router;

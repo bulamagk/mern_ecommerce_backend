@@ -5,6 +5,7 @@ const {
   updateCategory,
   deleteCategory,
 } = require("../controllers/categoriesController");
+const { verifyAuth } = require("../middleware/verifyJWTs");
 
 const router = require("express").Router();
 
@@ -14,7 +15,7 @@ const router = require("express").Router();
  * METHOD       POST
  * ACCESS       Private
  */
-router.post("/", createCategory);
+router.post("/", verifyAuth, createCategory);
 
 /*
  * ROUTE        /api/categories
@@ -38,7 +39,7 @@ router.get("/:id", getCategory);
  * METHOD       GET
  * ACCESS       Public
  */
-router.put("/:id", updateCategory);
+router.put("/:id", verifyAuth, updateCategory);
 
 /*
  * ROUTE        /api/categories/:id
@@ -46,6 +47,6 @@ router.put("/:id", updateCategory);
  * METHOD       GET
  * ACCESS       Private
  */
-router.delete("/:id", deleteCategory);
+router.delete("/:id", verifyAuth, deleteCategory);
 
 module.exports = router;
