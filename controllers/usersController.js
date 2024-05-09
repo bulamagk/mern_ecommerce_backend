@@ -157,7 +157,11 @@ const login = async (req, res) => {
       });
 
       // Generate access token
-      const accessToken = await generateAccessToken(userExist._id, null);
+      const accessToken = await generateAccessToken(
+        userExist._id,
+        userExist.role
+      );
+
       const user = {
         id: userExist._id,
         email: userExist.email,

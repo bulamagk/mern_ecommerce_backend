@@ -7,7 +7,7 @@ const {
   login,
   logout,
 } = require("../controllers/usersController");
-const { verifyAuth } = require("../middleware/verifyJWTs");
+const { verifyAuth, verifyRole } = require("../middleware/verifyJWTs");
 
 const router = require("express").Router();
 
@@ -17,7 +17,7 @@ const router = require("express").Router();
  * METHOD       POST
  * ACCESS       Private
  */
-router.post("/", verifyAuth, createUser);
+router.post("/", verifyAuth, verifyRole("admin"), createUser);
 
 /*
  * ROUTE        /api/users
@@ -25,7 +25,7 @@ router.post("/", verifyAuth, createUser);
  * METHOD       GET
  * ACCESS       Private
  */
-router.get("/", verifyAuth, getUsers);
+router.get("/", verifyAuth, verifyRole("admin"), getUsers);
 
 /*
  * ROUTE        /api/users/:id
@@ -33,7 +33,7 @@ router.get("/", verifyAuth, getUsers);
  * METHOD       GET
  * ACCESS       Private
  */
-router.get("/:id", verifyAuth, getUser);
+router.get("/:id", verifyAuth, verifyRole("user", "admin"), getUser);
 
 /*
  * ROUTE        /api/users/:id
@@ -41,7 +41,7 @@ router.get("/:id", verifyAuth, getUser);
  * METHOD       GET
  * ACCESS       Private
  */
-router.put("/:id", verifyAuth, updateUser);
+router.put("/:id", verifyAuth, verifyRole("user", "admin"), updateUser);
 
 /*
  * ROUTE        /api/users/:id
@@ -49,7 +49,7 @@ router.put("/:id", verifyAuth, updateUser);
  * METHOD       GET
  * ACCESS       Private
  */
-router.delete("/:id", verifyAuth, deleteUser);
+router.delete("/:id", verifyAuth, verifyRole("admin"), deleteUser);
 
 /*
  * ROUTE        /api/users/login

@@ -6,7 +6,7 @@ const {
   deleteOrder,
   verifyOrder,
 } = require("../controllers/ordersController");
-const { verifyAuth } = require("../middleware/verifyJWTs");
+const { verifyAuth, verifyRole } = require("../middleware/verifyJWTs");
 
 const router = require("express").Router();
 
@@ -48,7 +48,7 @@ router.get("/:id", verifyAuth, getOrder);
  * METHOD       GET
  * ACCESS       Public
  */
-router.put("/:id", verifyAuth, updateOrder);
+router.put("/:id", verifyAuth, verifyRole("user", "admin"), updateOrder);
 
 /*
  * ROUTE        /api/orders/:id

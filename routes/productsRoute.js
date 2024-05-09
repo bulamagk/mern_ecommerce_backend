@@ -11,7 +11,7 @@ const {
   deleteGalleryImage,
   updateProductImage,
 } = require("../controllers/productsController");
-const { verifyAuth } = require("../middleware/verifyJWTs");
+const { verifyAuth, verifyRole } = require("../middleware/verifyJWTs");
 
 /*
  * ROUTE        /api/products
@@ -19,13 +19,19 @@ const { verifyAuth } = require("../middleware/verifyJWTs");
  * METHOD       POST
  * ACCESS       Private
  */
-router.post("/", upload.single("product_image"), verifyAuth, createProduct);
+router.post(
+  "/",
+  upload.single("product_image"),
+  verifyAuth,
+  verifyRole("user", "admin"),
+  createProduct
+);
 
 /*
  * ROUTE        /api/products
  * DESC         Get list of products
  * METHOD       GET
- * ACCESS       Private
+ * ACCESS       Public
  */
 router.get("/", getProducts);
 
@@ -43,7 +49,7 @@ router.get("/:id", getProduct);
  * METHOD       GET
  * ACCESS       Public
  */
-router.put("/:id", verifyAuth, updateProduct);
+router.put("/:id", verifyAuth, verifyRole("user", "admin"), updateProduct);
 
 /*
  * ROUTE        /api/products/image/:id
@@ -54,6 +60,7 @@ router.put("/:id", verifyAuth, updateProduct);
 router.put(
   "/image/:id",
   verifyAuth,
+  verifyRole("user", "admin"),
   upload.single("product_image"),
   updateProductImage
 );
@@ -64,7 +71,7 @@ router.put(
  * METHOD       DELETE
  * ACCESS       Private
  */
-router.delete("/:id", verifyAuth, deleteProduct);
+router.delete("/:id", verifyAuth, verifyRole("user", "admin"), deleteProduct);
 
 /*
  * ROUTE        /api/products/:id
@@ -72,7 +79,12 @@ router.delete("/:id", verifyAuth, deleteProduct);
  * METHOD       DELETE
  * ACCESS       Private
  */
-router.delete("/gallery/:id", verifyAuth, deleteGalleryImage);
+router.delete(
+  "/gallery/:id",
+  verifyAuth,
+  verifyRole("user", "admin"),
+  deleteGalleryImage
+);
 
 /*
  * ROUTE        /api/products/gallery/:id
@@ -83,6 +95,7 @@ router.delete("/gallery/:id", verifyAuth, deleteGalleryImage);
 router.put(
   "/gallery/:id",
   verifyAuth,
+  verifyRole("user", "admin"),
   upload.single("gallery_image"),
   addGalleryImage
 );
