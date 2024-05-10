@@ -65,6 +65,6 @@ router.post("/login", login);
  * METHOD       POST
  * ACCESS       Public
  */
-router.post("/logout/:customerId", verifyAuth, logout);
+router.post("/logout/:customerId", logout);
 
 module.exports = router;

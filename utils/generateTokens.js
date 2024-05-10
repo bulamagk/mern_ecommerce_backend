@@ -12,7 +12,7 @@ const generateAccessToken = async (userId, userRole) => {
 const generateRefreshToken = async (userId, userRole) => {
   const token = jwt.sign(
     { userId, userRole },
-    process.env.ACCESS_TOKEN_SECRET,
+    process.env.REFRESH_TOKEN_SECRET,
     { expiresIn: "1d" }
   );
   return token;

@@ -142,7 +142,10 @@ const login = async (req, res) => {
     if (userExist && (await userExist.comparePasswords(password))) {
       // Generate refresh token
 
-      const refreshToken = await generateRefreshToken(userExist._id, null);
+      const refreshToken = await generateRefreshToken(
+        userExist._id,
+        userExist.role
+      );
 
       // Save refresh token in database
       userExist.refreshToken = refreshToken;

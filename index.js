@@ -12,6 +12,7 @@ const customersRoutes = require("./routes/customersRoute");
 const productsRoutes = require("./routes/productsRoute");
 const categoriesRoutes = require("./routes/categoriesRoute");
 const ordersRoutes = require("./routes/ordersRoute");
+const refreshTokenRoute = require("./routes/refreshTokenRoute");
 
 // Initialize app
 const app = express();
@@ -35,6 +36,7 @@ app.use("/api/customers", customersRoutes);
 app.use("/api/products", productsRoutes);
 app.use("/api/categories", categoriesRoutes);
 app.use("/api/orders", ordersRoutes);
+app.use("/api/refresh", refreshTokenRoute);
 
 // Error Middleware
 app.use(notFound);
