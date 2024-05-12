@@ -40,6 +40,9 @@ const customerSchema = new mongoose.Schema(
     resetPasswordToken: {
       type: String,
     },
+    resetLinkExpiration: {
+      type: Number,
+    },
     refreshToken: {
       type: String,
     },
