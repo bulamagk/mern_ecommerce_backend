@@ -15,7 +15,8 @@ const router = require("express").Router();
  * METHOD       POST
  * ACCESS       Private
  */
-router.post("/", verifyAuth, verifyRole("user", "admin"), createCategory);
+// router.post("/", verifyAuth, verifyRole("user", "admin"), createCategory);
+router.post("/", createCategory);
 
 /*
  * ROUTE        /api/categories
@@ -39,7 +40,8 @@ router.get("/:id", getCategory);
  * METHOD       GET
  * ACCESS       Public
  */
-router.put("/:id", verifyAuth, verifyRole("user", "admin"), updateCategory);
+// router.put("/:id", verifyAuth, verifyRole("user", "admin"), updateCategory);
+router.put("/:id", updateCategory);
 
 /*
  * ROUTE        /api/categories/:id
@@ -47,6 +49,7 @@ router.put("/:id", verifyAuth, verifyRole("user", "admin"), updateCategory);
  * METHOD       GET
  * ACCESS       Private
  */
-router.delete("/:id", verifyAuth, verifyRole("user", "admin"), deleteCategory);
+// router.delete("/:id", verifyAuth, verifyRole("user", "admin"), deleteCategory);
+router.delete("/:id", deleteCategory);
 
 module.exports = router;

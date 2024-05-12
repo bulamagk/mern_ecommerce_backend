@@ -19,13 +19,14 @@ const { verifyAuth, verifyRole } = require("../middleware/verifyJWTs");
  * METHOD       POST
  * ACCESS       Private
  */
-router.post(
-  "/",
-  upload.single("product_image"),
-  verifyAuth,
-  verifyRole("user", "admin"),
-  createProduct
-);
+// router.post(
+//   "/",
+//   upload.single("product_image"),
+//   verifyAuth,
+//   verifyRole("user", "admin"),
+//   createProduct
+// );
+router.post("/", upload.single("product_image"), createProduct);
 
 /*
  * ROUTE        /api/products
@@ -49,7 +50,8 @@ router.get("/:id", getProduct);
  * METHOD       GET
  * ACCESS       Public
  */
-router.put("/:id", verifyAuth, verifyRole("user", "admin"), updateProduct);
+// router.put("/:id", verifyAuth, verifyRole("user", "admin"), updateProduct);
+router.put("/:id", updateProduct);
 
 /*
  * ROUTE        /api/products/image/:id
@@ -57,13 +59,14 @@ router.put("/:id", verifyAuth, verifyRole("user", "admin"), updateProduct);
  * METHOD       PUT
  * ACCESS       Private
  */
-router.put(
-  "/image/:id",
-  verifyAuth,
-  verifyRole("user", "admin"),
-  upload.single("product_image"),
-  updateProductImage
-);
+// router.put(
+//   "/image/:id",
+//   verifyAuth,
+//   verifyRole("user", "admin"),
+//   upload.single("product_image"),
+//   updateProductImage
+// );
+router.put("/image/:id", upload.single("product_image"), updateProductImage);
 
 /*
  * ROUTE        /api/products/:id
@@ -71,7 +74,8 @@ router.put(
  * METHOD       DELETE
  * ACCESS       Private
  */
-router.delete("/:id", verifyAuth, verifyRole("user", "admin"), deleteProduct);
+// router.delete("/:id", verifyAuth, verifyRole("user", "admin"), deleteProduct);
+router.delete("/:id", deleteProduct);
 
 /*
  * ROUTE        /api/products/:id
@@ -79,12 +83,13 @@ router.delete("/:id", verifyAuth, verifyRole("user", "admin"), deleteProduct);
  * METHOD       DELETE
  * ACCESS       Private
  */
-router.delete(
-  "/gallery/:id",
-  verifyAuth,
-  verifyRole("user", "admin"),
-  deleteGalleryImage
-);
+// router.delete(
+//   "/gallery/:id",
+//   verifyAuth,
+//   verifyRole("user", "admin"),
+//   deleteGalleryImage
+// );
+router.delete("/gallery/:id", deleteGalleryImage);
 
 /*
  * ROUTE        /api/products/gallery/:id
@@ -92,12 +97,13 @@ router.delete(
  * METHOD       PUT
  * ACCESS       Private
  */
-router.put(
-  "/gallery/:id",
-  verifyAuth,
-  verifyRole("user", "admin"),
-  upload.single("gallery_image"),
-  addGalleryImage
-);
+// router.put(
+//   "/gallery/:id",
+//   verifyAuth,
+//   verifyRole("user", "admin"),
+//   upload.single("gallery_image"),
+//   addGalleryImage
+// );
+router.put("/gallery/:id", upload.single("gallery_image"), addGalleryImage);
 
 module.exports = router;
