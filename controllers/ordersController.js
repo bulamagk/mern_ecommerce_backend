@@ -140,6 +140,11 @@ const verifyOrder = async (req, res) => {
             totalPrice: item.totalPrice,
           });
 
+          // Update to reduce product count in stock
+          const product = await Product.findById(item._id);
+          product.countInStock = product.countInStock - item.count;
+          await product.save();
+
           orderItemsIdsArray.push(orderItem._id);
         })
       );
