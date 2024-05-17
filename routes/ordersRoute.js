@@ -5,6 +5,7 @@ const {
   updateOrder,
   deleteOrder,
   verifyOrder,
+  getOrdersCount,
 } = require("../controllers/ordersController");
 const { verifyAuth, verifyRole } = require("../middleware/verifyJWTs");
 
@@ -33,6 +34,14 @@ router.post("/verify", verifyAuth, verifyOrder);
  * ACCESS       Private
  */
 router.get("/", verifyAuth, getOrders);
+
+/*
+ * ROUTE        /api/orders/count
+ * DESC         Get total number of orders
+ * METHOD       GET
+ * ACCESS       Private
+ */
+router.get("/count", verifyAuth, verifyRole("admin"), getOrdersCount);
 
 /*
  * ROUTE        /api/orders/:id

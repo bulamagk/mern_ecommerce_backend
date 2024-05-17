@@ -4,6 +4,7 @@ const {
   getCategory,
   updateCategory,
   deleteCategory,
+  getCcategoriesCount,
 } = require("../controllers/categoriesController");
 const { verifyAuth, verifyRole } = require("../middleware/verifyJWTs");
 
@@ -25,6 +26,14 @@ router.post("/", createCategory);
  * ACCESS       Public
  */
 router.get("/", getCategories);
+
+/*
+ * ROUTE        /api/categories/count
+ * DESC         Get total number of categories
+ * METHOD       GET
+ * ACCESS       Private
+ */
+router.get("/count", getCcategoriesCount);
 
 /*
  * ROUTE        /api/categories/:id

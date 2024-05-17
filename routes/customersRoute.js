@@ -6,6 +6,7 @@ const {
   deleteCustomer,
   login,
   logout,
+  getCustomersCount,
 } = require("../controllers/customersController");
 const { verifyAuth } = require("../middleware/verifyJWTs");
 
@@ -26,6 +27,14 @@ router.post("/", createCustomer);
  * ACCESS       Private
  */
 router.get("/", verifyAuth, getCustomers);
+
+/*
+ * ROUTE        /api/customers/count
+ * DESC         Get total number of customers
+ * METHOD       GET
+ * ACCESS       Private
+ */
+router.get("/count", verifyAuth, getCustomersCount);
 
 /*
  * ROUTE        /api/customers/:id

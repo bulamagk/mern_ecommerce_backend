@@ -74,6 +74,27 @@ const getProducts = async (req, res) => {
   }
 };
 
+// Get Productsn Count Function ---------------------------------------------------------
+const getProductCount = async (req, res) => {
+  const { categoryId, isFeatured } = req.query;
+  let filter = {};
+
+  if (categoryId) {
+    filter = { category: categoryId };
+  }
+
+  if (isFeatured) {
+    filter = { isFeatured: String(isFeatured) == "true" ? true : false };
+  }
+
+  try {
+    const productCount = await Product.countDocuments(filter);
+    return res.status(200).json({ success: true, productCount });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // Get Single Product Function ----------------------------------------------------------
 const getProduct = async (req, res) => {
   const productId = req.params.id;
@@ -252,6 +273,7 @@ const deleteGalleryImage = async (req, res) => {
 module.exports = {
   createProduct,
   getProducts,
+  getProductCount,
   getProduct,
   updateProduct,
   updateProductImage,

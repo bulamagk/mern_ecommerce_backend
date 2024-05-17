@@ -59,6 +59,16 @@ const getCustomers = async (req, res) => {
 };
 
 // Get Single Customer Function -------------------------------------------------------------
+const getCustomersCount = async (req, res) => {
+  try {
+    const customersCount = await Customer.countDocuments();
+    return res.status(200).json({ success: true, customersCount });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Get Single Customer Function -------------------------------------------------------------
 const getCustomer = async (req, res) => {
   const customerId = req.params.id;
 
@@ -208,6 +218,7 @@ const logout = async (req, res) => {
 module.exports = {
   createCustomer,
   getCustomers,
+  getCustomersCount,
   getCustomer,
   updateCustomer,
   deleteCustomer,

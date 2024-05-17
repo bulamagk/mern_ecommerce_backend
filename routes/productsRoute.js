@@ -10,6 +10,7 @@ const {
   addGalleryImage,
   deleteGalleryImage,
   updateProductImage,
+  getProductCount,
 } = require("../controllers/productsController");
 const { verifyAuth, verifyRole } = require("../middleware/verifyJWTs");
 
@@ -35,6 +36,14 @@ router.post("/", upload.single("product_image"), createProduct);
  * ACCESS       Public
  */
 router.get("/", getProducts);
+
+/*
+ * ROUTE        /api/products/count
+ * DESC         Get total number of products
+ * METHOD       GET
+ * ACCESS       Private
+ */
+router.get("/count", getProductCount);
 
 /*
  * ROUTE        /api/products/:id

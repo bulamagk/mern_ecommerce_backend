@@ -200,6 +200,23 @@ const getOrders = async (req, res) => {
   }
 };
 
+// Get Total Number of Orders Function --------------------------------------------------
+const getOrdersCount = async (req, res) => {
+  const { status } = req.query;
+  let filter = {};
+
+  if (status) {
+    filter = { status };
+  }
+
+  try {
+    const ordersCount = await Order.countDocuments(filter);
+    return res.status(200).json({ success: true, ordersCount });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // Get Single Order Function -------------------------------------------------------------
 const getOrder = async (req, res) => {
   const orderId = req.params.id;
@@ -286,6 +303,7 @@ module.exports = {
   createOrder,
   verifyOrder,
   getOrders,
+  getOrdersCount,
   getOrder,
   updateOrder,
   deleteOrder,

@@ -27,7 +27,17 @@ const getCategories = async (req, res) => {
   }
 };
 
-// Get Single Category Function -------------------------------------------------------------
+// Get Categories Count Function --------------------------------------------------------
+const getCcategoriesCount = async (req, res) => {
+  try {
+    const categoriesCount = await Category.countDocuments();
+    return res.status(200).json({ success: true, categoriesCount });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Get Single Category Function ---------------------------------------------------------
 const getCategory = async (req, res) => {
   const categoryId = req.params.id;
 
@@ -92,6 +102,7 @@ const deleteCategory = async (req, res) => {
 module.exports = {
   createCategory,
   getCategories,
+  getCcategoriesCount,
   getCategory,
   updateCategory,
   deleteCategory,
